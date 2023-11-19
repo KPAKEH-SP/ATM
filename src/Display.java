@@ -1,8 +1,9 @@
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Display {
-    public static void ShowStartMenu(){
-        System.out.println("Выберите действие: \n├─1)Снятие наличных \n└─2)Пополнение хранилища");
+    public static void showStartMenu(){
+        System.out.println("Выберите действие: \n├─1)Снятие наличных \n├─2)Пополнение хранилища \n└─3)Показать хранилище");
         Scanner userInputAction = new Scanner(System.in);
         int userAction = 0;
 
@@ -10,26 +11,30 @@ public class Display {
             userAction = userInputAction.nextInt();
         }catch (java.util.InputMismatchException e) {
             System.out.println("Введите только цифру действия!");
-            ShowStartMenu();
+            showStartMenu();
         }
 
         switch (userAction) {
             case 1 -> {                                                                                                 //Снятие наличных
-                GetMoney();
+                getMoney();
             }
 
             case 2 -> {                                                                                                 //Пополнение хранилища
-                RefillStorage();
+                refillStorage();
+            }
+
+            case 3 -> {
+                showStorage();
             }
 
             default -> {
                 System.out.println("Выбрано несуществующее действие!");
-                ShowStartMenu();
+                showStartMenu();
             }
         }
     }
 
-    private static void GetMoney(){
+    private static void getMoney(){
         System.out.println("Введите сумму для снятия:");
         Scanner userInputSum = new Scanner(System.in);
         int userSum = 0;
@@ -38,22 +43,24 @@ public class Display {
             userSum = userInputSum.nextInt();
         }catch (java.util.InputMismatchException e) {
             System.out.println("Введите сумму цифрами!");
-            GetMoney();
+            getMoney();
         }
 
-        int[] banknotes = BanknoteStorage.GiveMoney(userSum);
+        HashMap<Integer, Integer> banknotes = BanknoteStorage.giveMoney(userSum);
         System.out.println("Вам было выдано:");
 
-        for (int id = 0; id < banknotes.length; id++){
-            if (banknotes[id] > 0){
-                System.out.println(banknotes[id] + " купюр(-ы/-а) номиналом " + BanknoteStorage.banknotePatterns[id]);
+        for (BanknotePatterns currentBanknote : BanknotePatterns.values()) {
+            BanknotePatterns banknoteValue = BanknotePatterns.valueOf(currentBanknote.name());
+
+            if (banknotes.get(banknoteValue.getBanknote()) != null) {
+                System.out.println(banknotes.get(banknoteValue.getBanknote()) + " купюр(-ы/-а) номиналом " + banknoteValue.getBanknote());
             }
         }
 
-        ShowStartMenu();
+        showStartMenu();
     }
 
-    private static void RefillStorage(){
+    private static void refillStorage(){
         System.out.println("Выбирете купюру для изменения её количества в банкомате: \n├─1)5000 \n├─2)2000 \n├─3)1000 \n├─4)500 \n├─5)200 \n├─6)100 \n├─7)50 \n└─8)Вернуться в главное меню");
         Scanner userInputBanknote = new Scanner(System.in);
         int userBanknote = 0;
@@ -70,7 +77,7 @@ public class Display {
             }
         }catch (java.util.InputMismatchException e) {
             System.out.println("Введите только цифру!");
-            RefillStorage();
+            refillStorage();
         }
 
         switch (userBanknote){
@@ -103,16 +110,21 @@ public class Display {
                 System.out.println("Сейчас в хранилище " + userBanknoteCount + " купюр(-ы/-а) номиналом 50");
             }
             case 8->{                                                                                                   // Выход в главное меню
-                ShowStartMenu();
+                showStartMenu();
             }
 
             default -> {
                 System.out.println("Выбрано неверное действие");
-                RefillStorage();
+                refillStorage();
             }
         }
 
-        BanknoteStorageSaver.SaveStorage();
-        RefillStorage();
+        BanknoteStorageSaver.saveStorage();
+        refillStorage();
+    }
+
+    private static void showStorage(){
+        System.out.println(BanknoteStorage.availableBanknotes);
+        showStartMenu();
     }
 }

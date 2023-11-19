@@ -1,6 +1,12 @@
 public class ATM {
     public static void main(String[] args) {
-        BanknoteStorageSaver.InitializeStorage();
-        Display.ShowStartMenu();
+//
+//        for (BanknotePatterns currentBanknote : BanknotePatterns.values()){
+//            BanknotePatterns banknotePatterns = BanknotePatterns.valueOf(currentBanknote.name());
+//            System.out.println(banknotePatterns.getBanknote());
+//        }
+
+        BanknoteStorageSaver.initializeStorage();
+        Display.showStartMenu();
     }
 }
