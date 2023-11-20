@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Display {
@@ -46,7 +47,7 @@ public class Display {
             getMoney();
         }
 
-        HashMap<Integer, Integer> banknotes = BanknoteStorage.giveMoney(userSum);
+        Map<Integer, Integer> banknotes = BanknoteStorage.giveMoney(userSum);
         System.out.println("Вам было выдано:");
 
         for (BanknotePatterns currentBanknote : BanknotePatterns.values()) {

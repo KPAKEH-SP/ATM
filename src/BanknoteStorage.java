@@ -2,11 +2,13 @@ import Exceptions.NotEnoughMoneyException;
 
 import java.io.Serializable;
 import java.util.HashMap;
-public class BanknoteStorage implements Serializable {
-    public static HashMap<Integer, Integer> availableBanknotes = new HashMap<Integer, Integer>();
+import java.util.Map;
 
-    public static HashMap<Integer, Integer> giveMoney(int sum) {                                                        // Возвращает массив купюр, подсчитанных из переданой суммы
-        HashMap<Integer, Integer> returnBanknotes = new HashMap<>();
+public class BanknoteStorage implements Serializable {
+    public static Map<Integer, Integer> availableBanknotes = new HashMap<Integer, Integer>();
+
+    public static Map<Integer, Integer> giveMoney(int sum) {                                                        // Возвращает массив купюр, подсчитанных из переданой суммы
+        Map<Integer, Integer> returnBanknotes = new HashMap<>();
 
         for (BanknotePatterns currentBanknote : BanknotePatterns.values()){
             BanknotePatterns banknoteValue = BanknotePatterns.valueOf(currentBanknote.name());
