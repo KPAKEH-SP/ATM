@@ -1,16 +1,26 @@
-import Exceptions.NotEnoughMoneyException;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 public class BanknoteStorage implements Serializable {
-    public static Map<Integer, Integer> availableBanknotes = new HashMap<Integer, Integer>();
+    private static Map<Integer, Integer> availableBanknotes = new HashMap<Integer, Integer>();
 
-    public static Map<Integer, Integer> giveMoney(int sum) {                                                        // Возвращает массив купюр, подсчитанных из переданой суммы
+    public static void setAvailableBanknotes(HashMap<Integer, Integer> value) {
+        availableBanknotes = value;
+    }
+
+    public static void setAvailableBanknotes(Integer key, Integer value) {
+        availableBanknotes.put(key, value);
+    }
+
+    public static Map<Integer, Integer> getAvailableBanknotes() {
+        return availableBanknotes;
+    }
+
+    public static Map<Integer, Integer> giveMoney(int sum) {                                                            // Возвращает массив купюр, подсчитанных из переданой суммы
         Map<Integer, Integer> returnBanknotes = new HashMap<>();
 
-        for (BanknotePatterns currentBanknote : BanknotePatterns.values()){
+        for (BanknotePatterns currentBanknote : BanknotePatterns.values()) {
             BanknotePatterns banknoteValue = BanknotePatterns.valueOf(currentBanknote.name());
             while (sum - banknoteValue.getBanknote() >= 0) {                                                            // Вычитает текущий проверочный номинал из указаной суммы, пока может это делать
                 if (availableBanknotes.get(banknoteValue.getBanknote()) > 0) {                                          // Проверяет закончились ли банкноты с нужным номиналом
@@ -18,9 +28,7 @@ public class BanknoteStorage implements Serializable {
                         int currentCount = returnBanknotes.get(banknoteValue.getBanknote());
                         currentCount++;                                                                                 // Прибавляет 1 банкноту необходимого номинала
                         returnBanknotes.put(banknoteValue.getBanknote(), currentCount);                                 // Записывает новое количество банкнот в хешмэп
-                    }
-
-                    else {
+                    } else {
                         returnBanknotes.put(banknoteValue.getBanknote(), 1);
                     }
 
@@ -36,15 +44,13 @@ public class BanknoteStorage implements Serializable {
             }
         }
 
-        if (sum > 0){                                                                                                   // Если банкомат не может выдать всю необходимую сумму, то выдаёт ошибку
+        if (sum > 0) {                                                                                                   // Если банкомат не может выдать всю необходимую сумму, то выдаёт ошибку
             try {
                 throw new NotEnoughMoneyException();
             } catch (NotEnoughMoneyException e) {
                 throw new RuntimeException(e);
             }
-        }
-
-        else {
+        } else {
             BanknoteStorageSaver.saveStorage();                                                                         // Сохраняет текущее количество купюр в банкомате в хранилище
             return returnBanknotes;                                                                                     // Если банкомат может выдать всю необходимую сумму, возвращает хешмэп купюр
         }
