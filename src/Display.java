@@ -2,7 +2,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Display {
-    public static void showStartMenu() {
+    public static void showStartMenu() throws NotEnoughMoneyException {
         boolean receivedUserAction = false;
 
         while (!receivedUserAction) {
@@ -39,33 +39,41 @@ public class Display {
         }
     }
 
-    private static void getMoney() {
-        System.out.println("Введите сумму для снятия:");
-        Scanner userInputSum = new Scanner(System.in);
-        int userSum = 0;
+    private static void getMoney() throws NotEnoughMoneyException {
+        boolean receivedUserAction = false;
 
-        try {
-            userSum = userInputSum.nextInt();
-        } catch (java.util.InputMismatchException e) {
-            System.out.println("Введите сумму цифрами!");
-            getMoney();
-        }
+        while (receivedUserAction == false) {
+            System.out.println("Введите сумму для снятия:");
+            Scanner userInputSum = new Scanner(System.in);
+            int userSum = 0;
 
-        Map<Integer, Integer> banknotes = BanknoteStorage.giveMoney(userSum);
-        System.out.println("Вам было выдано:");
+            try {
+                userSum = userInputSum.nextInt();
 
-        for (BanknotePatterns currentBanknote : BanknotePatterns.values()) {
-            BanknotePatterns banknoteValue = BanknotePatterns.valueOf(currentBanknote.name());
+                Map<Integer, Integer> banknotes = BanknoteStorage.giveMoney(userSum);
+                System.out.println("Вам было выдано:");
 
-            if (banknotes.get(banknoteValue.getBanknote()) != null) {
-                System.out.println(banknotes.get(banknoteValue.getBanknote()) + " купюр(-ы/-а) номиналом " + banknoteValue.getBanknote());
+                for (BanknotePatterns currentBanknote : BanknotePatterns.values()) {
+                    BanknotePatterns banknoteValue = BanknotePatterns.valueOf(currentBanknote.name());
+
+                    if (banknotes.get(banknoteValue.getBanknote()) != null) {
+                        System.out.println(banknotes.get(banknoteValue.getBanknote()) + " купюр(-ы/-а) номиналом " + banknoteValue.getBanknote());
+                    }
+                }
+
+                receivedUserAction = true;
+            } catch (java.util.InputMismatchException e) {
+                System.out.println("Введите сумму цифрами!");
+                continue;
             }
+
+
         }
 
         showStartMenu();
     }
 
-    private static void refillStorage() {
+    private static void refillStorage() throws NotEnoughMoneyException {
         while (true) {
             System.out.println("Выбирете купюру для изменения её количества в банкомате: \n├─1)5000 \n├─2)2000 \n├─3)1000 \n├─4)500 \n├─5)200 \n├─6)100 \n├─7)50 \n└─8)Вернуться в главное меню");
             Scanner userInputBanknote = new Scanner(System.in);
@@ -127,7 +135,7 @@ public class Display {
         }
     }
 
-    private static void showStorage() {
+    private static void showStorage() throws NotEnoughMoneyException {
         System.out.println(BanknoteStorage.getAvailableBanknotes());
         showStartMenu();
     }
