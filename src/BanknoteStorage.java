@@ -1,38 +1,48 @@
 import java.io.Serializable;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BanknoteStorage implements Serializable {
-    public static Hashtable<Integer, Integer> availableBanknotes = new Hashtable();
-    public static final int[] banknotePatterns = new int[] {5000, 2000, 1000, 500, 200, 100, 50};
+    private static Map<Integer, Integer> availableBanknotes = new HashMap<Integer, Integer>();
 
-    public static int[] GiveMoney(int sum){                                                                             // Возвращает массив купюр, подсчитанных из переданой суммы
-        int[] returnBanknotes = new int[7];
+    public static void setAvailableBanknotes(HashMap<Integer, Integer> value) {
+        availableBanknotes = value;
+    }
 
-        for (int id = 0; id < banknotePatterns.length; id++){
-            int currentBanknote = banknotePatterns[id];                                                                 // Номинал для проверки
+    public static void setAvailableBanknotes(Integer key, Integer value) {
+        availableBanknotes.put(key, value);
+    }
 
-            while (sum - currentBanknote > 0) {                                                                         // Вычитает текущий проверочный номинал из указаной суммы, пока может это делать
-                if (availableBanknotes.get(currentBanknote) > 0) {                                                      // Проверяет закончились ли банкноты с нужным номиналом
-                    returnBanknotes[id]++;                                                                              // Прибавляет в массив по 1 банкноте необходимого номинала
-                    sum -= currentBanknote;
+    public static Map<Integer, Integer> getAvailableBanknotes() {
+        return availableBanknotes;
+    }
 
-                    int newAvailableBanknoteCount = (int) availableBanknotes.get(currentBanknote);                      // Достаёт из хранилища количество необходимых купюр
-                    newAvailableBanknoteCount--;                                                                        // Вычитает 1 необходимую купюру из кранилища
+    public static Map<Integer, Integer> giveMoney(int sum) throws NotEnoughMoneyException {                             // Возвращает Map купюр, подсчитанных из переданой суммы
+        Map<Integer, Integer> returnBanknotes = new HashMap<>();
 
-                    availableBanknotes.put(currentBanknote, newAvailableBanknoteCount);                                 // Записывает в хранилище новое количество купюр
-                    BanknoteStorageSaver.SaveStorage();                                                                 // Сохраняет хранилище
+        for (BanknotePatterns currentBanknote : BanknotePatterns.values()) {
+            if (availableBanknotes.getOrDefault(currentBanknote.getBanknote(), 0) > 0) {                     // Проверяет закончились ли банкноты с нужным номиналом
+                int banknoteCount = sum / currentBanknote.getBanknote();                                                // Высчитывает количество необходимых купюр
+                if (availableBanknotes.getOrDefault(currentBanknote.getBanknote(), 0) >= banknoteCount) {
+                    sum -= banknoteCount * currentBanknote.getBanknote();                                               // Вычетает из суммы ползователя сумму, которую банкомат подсчитал
                 }
 
-                else {                                                                                                  // В случае нехватки необходимых купюр, переходит к работае с следующими купюрами
-                    break;
+                if (banknoteCount > 0) {
+                    returnBanknotes.put(currentBanknote.getBanknote(), banknoteCount);                                  // Записывает новое количество банкнот в хешмэп
+
+                    int newAvailableBanknoteCount = availableBanknotes.get(currentBanknote.getBanknote());              // Достаёт из хранилища количество необходимых купюр
+                    newAvailableBanknoteCount -= banknoteCount;                                                         // Вычитает необходимое количество купюр
+                    availableBanknotes.put(currentBanknote.getBanknote(), newAvailableBanknoteCount);                   // Записывает в хранилище новое количество купюр
                 }
             }
         }
 
-        if (sum > 0){
-            System.out.println("Банкомат не может выдать сумму: " + sum +". Подходящих купюр нет в наличии!");
+        if (sum > 0) {                                                                                                  // Если банкомат не может выдать всю необходимую сумму, то выдаёт ошибку
+            BanknoteStorageSaver.initializeStorage();
+            throw new NotEnoughMoneyException();
+        } else {
+            BanknoteStorageSaver.saveStorage();                                                                         // Сохраняет текущее количество купюр в банкомате в хранилище
+            return returnBanknotes;                                                                                     // Если банкомат может выдать всю необходимую сумму, возвращает хешмэп купюр
         }
-
-        return returnBanknotes;
     }
 }
