@@ -64,10 +64,9 @@ public class Display {
                 receivedUserAction = true;
             } catch (java.util.InputMismatchException e) {
                 System.out.println("Введите сумму цифрами!");
-                continue;
+            } catch (NotEnoughMoneyException e) {
+                showStartMenu();
             }
-
-
         }
 
         showStartMenu();
@@ -94,35 +93,35 @@ public class Display {
             }
 
             switch (userBanknote) {
-                case 1 -> {                                                                                                   // Купюра номиналом 5000
+                case 1 -> {                                                                                             // Купюра номиналом 5000
                     BanknoteStorage.setAvailableBanknotes(5000, userBanknoteCount);
                     System.out.println("Сейчас в хранилище " + userBanknoteCount + " купюр(-ы/-а) номиналом 5000");
                 }
-                case 2 -> {                                                                                                   // Купюра номиналом 2000
+                case 2 -> {                                                                                             // Купюра номиналом 2000
                     BanknoteStorage.setAvailableBanknotes(2000, userBanknoteCount);
                     System.out.println("Сейчас в хранилище " + userBanknoteCount + " купюр(-ы/-а) номиналом 2000");
                 }
-                case 3 -> {                                                                                                   // Купюра номиналом 1000
+                case 3 -> {                                                                                             // Купюра номиналом 1000
                     BanknoteStorage.setAvailableBanknotes(1000, userBanknoteCount);
                     System.out.println("Сейчас в хранилище " + userBanknoteCount + " купюр(-ы/-а) номиналом 1000");
                 }
-                case 4 -> {                                                                                                   // Купюра номиналом 500
+                case 4 -> {                                                                                             // Купюра номиналом 500
                     BanknoteStorage.setAvailableBanknotes(500, userBanknoteCount);
                     System.out.println("Сейчас в хранилище " + userBanknoteCount + " купюр(-ы/-а) номиналом 500");
                 }
-                case 5 -> {                                                                                                   // Купюра номиналом 200
+                case 5 -> {                                                                                             // Купюра номиналом 200
                     BanknoteStorage.setAvailableBanknotes(200, userBanknoteCount);
                     System.out.println("Сейчас в хранилище " + userBanknoteCount + " купюр(-ы/-а) номиналом 200");
                 }
-                case 6 -> {                                                                                                   // Купюра номиналом 100
+                case 6 -> {                                                                                             // Купюра номиналом 100
                     BanknoteStorage.setAvailableBanknotes(100, userBanknoteCount);
                     System.out.println("Сейчас в хранилище " + userBanknoteCount + " купюр(-ы/-а) номиналом 100");
                 }
-                case 7 -> {                                                                                                   // Купюра номиналом 50
+                case 7 -> {                                                                                             // Купюра номиналом 50
                     BanknoteStorage.setAvailableBanknotes(50, userBanknoteCount);
                     System.out.println("Сейчас в хранилище " + userBanknoteCount + " купюр(-ы/-а) номиналом 50");
                 }
-                case 8 -> {                                                                                                   // Выход в главное меню
+                case 8 -> {                                                                                             // Выход в главное меню
                     showStartMenu();
                 }
 

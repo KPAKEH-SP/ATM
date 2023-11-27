@@ -23,7 +23,9 @@ public class BanknoteStorage implements Serializable {
         for (BanknotePatterns currentBanknote : BanknotePatterns.values()) {
             if (availableBanknotes.getOrDefault(currentBanknote.getBanknote(), 0) > 0) {                     // Проверяет закончились ли банкноты с нужным номиналом
                 int banknoteCount = sum / currentBanknote.getBanknote();                                                // Высчитывает количество необходимых купюр
-                sum -= banknoteCount * currentBanknote.getBanknote();                                                   // Вычетает из суммы ползователя сумму, которую банкомат подсчитал
+                if (availableBanknotes.getOrDefault(currentBanknote.getBanknote(), 0) >= banknoteCount) {
+                    sum -= banknoteCount * currentBanknote.getBanknote();                                               // Вычетает из суммы ползователя сумму, которую банкомат подсчитал
+                }
 
                 if (banknoteCount > 0) {
                     returnBanknotes.put(currentBanknote.getBanknote(), banknoteCount);                                  // Записывает новое количество банкнот в хешмэп
