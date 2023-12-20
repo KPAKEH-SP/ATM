@@ -1,8 +1,16 @@
+package ru.denis.atm;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.Map;
 import java.util.Scanner;
 
+@Component
 public class Display {
-    public static void showStartMenu() throws NotEnoughMoneyException {
+
+    @Autowired
+    public void showStartMenu(BanknoteStorage banknoteStorage) {
         boolean receivedUserAction = false;
 
         while (!receivedUserAction) {
@@ -18,15 +26,15 @@ public class Display {
 
             switch (userAction) {
                 case 1 -> {                                                                                                 //Снятие наличных
-                    getMoney();
+                    getMoney(banknoteStorage);
                 }
 
                 case 2 -> {                                                                                                 //Пополнение хранилища
-                    refillStorage();
+                    refillStorage(banknoteStorage);
                 }
 
                 case 3 -> {
-                    showStorage();
+                    showStorage(banknoteStorage);
                 }
 
                 default -> {
@@ -39,7 +47,7 @@ public class Display {
         }
     }
 
-    private static void getMoney() throws NotEnoughMoneyException {
+    public void getMoney(BanknoteStorage banknoteStorage) {
         boolean receivedUserAction = false;
 
         while (receivedUserAction == false) {
@@ -50,7 +58,7 @@ public class Display {
             try {
                 userSum = userInputSum.nextInt();
 
-                Map<Integer, Integer> banknotes = BanknoteStorage.giveMoney(userSum);
+                Map<Integer, Integer> banknotes = banknoteStorage.giveMoney(userSum);
                 System.out.println("Вам было выдано:");
 
                 for (BanknotePatterns currentBanknote : BanknotePatterns.values()) {
@@ -65,14 +73,12 @@ public class Display {
             } catch (java.util.InputMismatchException e) {
                 System.out.println("Введите сумму цифрами!");
             } catch (NotEnoughMoneyException e) {
-                showStartMenu();
+
             }
         }
-
-        showStartMenu();
     }
 
-    private static void refillStorage() throws NotEnoughMoneyException {
+    public void refillStorage(BanknoteStorage banknoteStorage) {
         while (true) {
             System.out.println("Выбирете купюру для изменения её количества в банкомате: \n├─1)5000 \n├─2)2000 \n├─3)1000 \n├─4)500 \n├─5)200 \n├─6)100 \n├─7)50 \n└─8)Вернуться в главное меню");
             Scanner userInputBanknote = new Scanner(System.in);
@@ -94,48 +100,46 @@ public class Display {
 
             switch (userBanknote) {
                 case 1 -> {                                                                                             // Купюра номиналом 5000
-                    BanknoteStorage.setAvailableBanknotes(5000, userBanknoteCount);
+                    banknoteStorage.setAvailableBanknotes(5000, userBanknoteCount);
                     System.out.println("Сейчас в хранилище " + userBanknoteCount + " купюр(-ы/-а) номиналом 5000");
                 }
                 case 2 -> {                                                                                             // Купюра номиналом 2000
-                    BanknoteStorage.setAvailableBanknotes(2000, userBanknoteCount);
+                    banknoteStorage.setAvailableBanknotes(2000, userBanknoteCount);
                     System.out.println("Сейчас в хранилище " + userBanknoteCount + " купюр(-ы/-а) номиналом 2000");
                 }
                 case 3 -> {                                                                                             // Купюра номиналом 1000
-                    BanknoteStorage.setAvailableBanknotes(1000, userBanknoteCount);
+                    banknoteStorage.setAvailableBanknotes(1000, userBanknoteCount);
                     System.out.println("Сейчас в хранилище " + userBanknoteCount + " купюр(-ы/-а) номиналом 1000");
                 }
                 case 4 -> {                                                                                             // Купюра номиналом 500
-                    BanknoteStorage.setAvailableBanknotes(500, userBanknoteCount);
+                    banknoteStorage.setAvailableBanknotes(500, userBanknoteCount);
                     System.out.println("Сейчас в хранилище " + userBanknoteCount + " купюр(-ы/-а) номиналом 500");
                 }
                 case 5 -> {                                                                                             // Купюра номиналом 200
-                    BanknoteStorage.setAvailableBanknotes(200, userBanknoteCount);
+                    banknoteStorage.setAvailableBanknotes(200, userBanknoteCount);
                     System.out.println("Сейчас в хранилище " + userBanknoteCount + " купюр(-ы/-а) номиналом 200");
                 }
                 case 6 -> {                                                                                             // Купюра номиналом 100
-                    BanknoteStorage.setAvailableBanknotes(100, userBanknoteCount);
+                    banknoteStorage.setAvailableBanknotes(100, userBanknoteCount);
                     System.out.println("Сейчас в хранилище " + userBanknoteCount + " купюр(-ы/-а) номиналом 100");
                 }
                 case 7 -> {                                                                                             // Купюра номиналом 50
-                    BanknoteStorage.setAvailableBanknotes(50, userBanknoteCount);
+                    banknoteStorage.setAvailableBanknotes(50, userBanknoteCount);
                     System.out.println("Сейчас в хранилище " + userBanknoteCount + " купюр(-ы/-а) номиналом 50");
                 }
                 case 8 -> {                                                                                             // Выход в главное меню
-                    showStartMenu();
+                    showStartMenu(banknoteStorage);
                 }
 
                 default -> {
                     System.out.println("Выбрано неверное действие");
                 }
             }
-
-            BanknoteStorageSaver.saveStorage();
         }
     }
 
-    private static void showStorage() throws NotEnoughMoneyException {
-        System.out.println(BanknoteStorage.getAvailableBanknotes());
-        showStartMenu();
+    public void showStorage(BanknoteStorage banknoteStorage) {
+        System.out.println(banknoteStorage.getStorage());
+        showStartMenu(banknoteStorage);
     }
 }
