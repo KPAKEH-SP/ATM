@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit storage</title>
+</head>
+<body>
+<form th:method="PATCH" th:action="@{/editStorage}" th:object="${banknotes}">
+    <label for="5000">5000 banknotes</label>
+    <input type="text" th:field="*{get(5000)}" th:value="*{get(5000)}" id="5000">
+    <br>
+    <label for="2000">2000 banknotes</label>
+    <input type="text" th:field="*{get(2000)}" th:value="*{get(2000)}" id="2000">
+    <br>
+    <label for="1000">1000 banknotes</label>
+    <input type="text" th:field="*{get(1000)}" th:value="*{get(1000)}" id="1000">
+    <br>
+    <label for="500">500 banknotes</label>
+    <input type="text" th:field="*{get(500)}" th:value="*{get(500)}" id="500">
+    <br>
+    <label for="200">200 banknotes</label>
+    <input type="text" th:field="*{get(200)}" th:value="*{get(200)}" id="200">
+    <br>
+    <label for="100">100 banknotes</label>
+    <input type="text" th:field="*{get(100)}" th:value="*{get(100)}" id="100">
+    <br>
+    <label for="50">50 banknotes</label>
+    <input type="text" th:field="*{get(50)}" th:value="*{get(50)}" id="50">
+    <br>
+    <input type="submit" value="Edit">
+    <br>
+    <a href="/menu">Back to menu</a>
+</form>
+</body>
+</html>

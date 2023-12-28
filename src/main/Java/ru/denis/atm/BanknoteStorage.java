@@ -8,12 +8,16 @@ import java.util.Map;
 
 @Component
 public class BanknoteStorage {
-    @Autowired
-    BanknoteStorageSaver banknoteStorageSaver;
+    final BanknoteStorageSaver banknoteStorageSaver;
 
-    public Map<Integer, Integer> giveMoney(int sum) throws NotEnoughMoneyException {                                    // Возвращает Map купюр, подсчитанных из переданой суммы
-        Map<Integer, Integer> availableBanknotes = banknoteStorageSaver.getStorage();
-        Map<Integer, Integer> returnedBanknotes = new HashMap<>();
+    @Autowired
+    public BanknoteStorage(BanknoteStorageSaver banknoteStorageSaver) {
+        this.banknoteStorageSaver = banknoteStorageSaver;
+    }
+
+    public Map<BanknotePatterns, Integer> giveMoney(int sum) throws NotEnoughMoneyException {                                    // Возвращает Map купюр, подсчитанных из переданой суммы
+        Map<String, Integer> availableBanknotes = banknoteStorageSaver.getStorage();
+        Map<BanknotePatterns, Integer> returnedBanknotes = new HashMap<>();
 
         for (BanknotePatterns currentBanknote : BanknotePatterns.values()) {
             if (availableBanknotes.getOrDefault(currentBanknote.getBanknote(), 0) > 0) {                     // Проверяет закончились ли банкноты с нужным номиналом
@@ -23,11 +27,11 @@ public class BanknoteStorage {
                 }
 
                 if (banknoteCount > 0) {
-                    returnedBanknotes.put(currentBanknote.getBanknote(), banknoteCount);                                  // Записывает новое количество банкнот в хешмэп
+                    returnedBanknotes.put(currentBanknote, banknoteCount);                                  // Записывает новое количество банкнот в хешмэп
 
                     int newAvailableBanknoteCount = availableBanknotes.get(currentBanknote.getBanknote());              // Достаёт из хранилища количество необходимых купюр
                     newAvailableBanknoteCount -= banknoteCount;                                                         // Вычитает необходимое количество купюр
-                    availableBanknotes.put(currentBanknote.getBanknote(), newAvailableBanknoteCount);                   // Записывает в хранилище новое количество купюр
+                    availableBanknotes.put(String.valueOf(currentBanknote.getBanknote()), newAvailableBanknoteCount);                   // Записывает в хранилище новое количество купюр
                 }
             }
         }
@@ -40,14 +44,7 @@ public class BanknoteStorage {
         }
     }
 
-
-    public void setAvailableBanknotes(int key, int value) {
-        Map<Integer, Integer> availableBanknotes = banknoteStorageSaver.getStorage();
-        availableBanknotes.put(key, value);
-        banknoteStorageSaver.saveStorage(availableBanknotes);
-    }
-
-    public Map<Integer, Integer> getStorage() {
+    public Map<String, Integer> getStorage() {
         return banknoteStorageSaver.getStorage();
     }
 }

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Storage</title>
+</head>
+<body>
+denomination-quantity
+
+<div th:each="banknote:${banknotes}">
+    <h3 th:text="${banknote}"></h3>
+</div>
+
+<a href="/editStorage">Edit storage</a>
+<br>
+<a href="/menu">Back to menu</a>
+</body>
+</html>
