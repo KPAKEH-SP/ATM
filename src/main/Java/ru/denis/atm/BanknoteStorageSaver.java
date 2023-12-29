@@ -8,8 +8,8 @@ import java.util.Map;
 
 @Component
 public class BanknoteStorageSaver {
-    final File BANKNOTE_STORAGE_FILE = new File("src/main/resources/BanknoteStorage.bin");
-    public void saveStorage(Map<Integer, Integer> savedMap) {                                                                                   // С помощью сериализации сохраняет хештаблицу с банкнотами в файл BanknoteStorage.bin
+    final File BANKNOTE_STORAGE_FILE = new File(getClass().getClassLoader().getResource("BanknoteStorage.bin").getFile());
+    public void saveStorage(Map<String, Integer> savedMap) {                                                                                   // С помощью сериализации сохраняет хештаблицу с банкнотами в файл BanknoteStorage.bin
         try {
             FileOutputStream fos = new FileOutputStream(BANKNOTE_STORAGE_FILE.getPath());
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -21,14 +21,14 @@ public class BanknoteStorageSaver {
         }
     }
 
-    public Map<Integer, Integer> getStorage() {                                                                             // С помощью сериализации загружает хештаблицу с банкнотами из файла BanknoteStorage.bin
-        Map<Integer, Integer> returnedBanknotes = new HashMap<Integer, Integer>();
+    public Map<String, Integer> getStorage() {                                                                             // С помощью сериализации загружает хештаблицу с банкнотами из файла BanknoteStorage.bin
+        Map<String, Integer> returnedBanknotes = new HashMap<>();
 
         try {
             FileInputStream fis = new FileInputStream(BANKNOTE_STORAGE_FILE.getPath());
             ObjectInputStream ois = new ObjectInputStream(fis);
 
-            returnedBanknotes = (Map<Integer, Integer>) ois.readObject();
+            returnedBanknotes = (Map<String, Integer>) ois.readObject();
             ois.close();
         } catch (IOException e) {
             System.out.println("Потерян файл хранилища!");

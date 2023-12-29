@@ -8,46 +8,39 @@ import java.util.Map;
 
 @Component
 public class BanknoteStorage {
-    @Autowired
-    BanknoteStorageSaver banknoteStorageSaver;
+    final BanknoteStorageSaver banknoteStorageSaver;
 
-    public Map<Integer, Integer> giveMoney(int sum) throws NotEnoughMoneyException {                                    // Возвращает Map купюр, подсчитанных из переданой суммы
-        Map<Integer, Integer> availableBanknotes = banknoteStorageSaver.getStorage();
-        Map<Integer, Integer> returnedBanknotes = new HashMap<>();
+    @Autowired
+    public BanknoteStorage(BanknoteStorageSaver banknoteStorageSaver) {
+        this.banknoteStorageSaver = banknoteStorageSaver;
+    }
+
+    public Map<String, Integer> giveMoney(int sum) throws NotEnoughMoneyException {
+        Map<String, Integer> availableBanknotes = banknoteStorageSaver.getStorage();
+        Map<String, Integer> returnedBanknotes = new HashMap<>();
 
         for (BanknotePatterns currentBanknote : BanknotePatterns.values()) {
-            if (availableBanknotes.getOrDefault(currentBanknote.getBanknote(), 0) > 0) {                     // Проверяет закончились ли банкноты с нужным номиналом
-                int banknoteCount = sum / currentBanknote.getBanknote();                                                // Высчитывает количество необходимых купюр
-                if (availableBanknotes.getOrDefault(currentBanknote.getBanknote(), 0) >= banknoteCount) {
-                    sum -= banknoteCount * currentBanknote.getBanknote();                                               // Вычетает из суммы ползователя сумму, которую банкомат подсчитал
+            if (availableBanknotes.getOrDefault(String.valueOf(currentBanknote.getBanknote()), 0) > 0) {
+                int banknoteCount = sum / currentBanknote.getBanknote();
+                if (availableBanknotes.getOrDefault(String.valueOf(currentBanknote.getBanknote()), 0) >= banknoteCount) {
+                    sum -= banknoteCount * currentBanknote.getBanknote();
                 }
 
                 if (banknoteCount > 0) {
-                    returnedBanknotes.put(currentBanknote.getBanknote(), banknoteCount);                                  // Записывает новое количество банкнот в хешмэп
+                    returnedBanknotes.put(String.valueOf(currentBanknote.getBanknote()), banknoteCount);
 
-                    int newAvailableBanknoteCount = availableBanknotes.get(currentBanknote.getBanknote());              // Достаёт из хранилища количество необходимых купюр
-                    newAvailableBanknoteCount -= banknoteCount;                                                         // Вычитает необходимое количество купюр
-                    availableBanknotes.put(currentBanknote.getBanknote(), newAvailableBanknoteCount);                   // Записывает в хранилище новое количество купюр
+                    int newAvailableBanknoteCount = availableBanknotes.get(String.valueOf(currentBanknote.getBanknote()));
+                    newAvailableBanknoteCount -= banknoteCount;
+                    availableBanknotes.put(String.valueOf(currentBanknote.getBanknote()), newAvailableBanknoteCount);
                 }
             }
         }
 
-        if (sum > 0) {                                                                                                  // Если банкомат не может выдать всю необходимую сумму, то выдаёт ошибку
+        if (sum > 0) {
             throw new NotEnoughMoneyException();
         } else {
-            banknoteStorageSaver.saveStorage(availableBanknotes);                                                       // Сохраняет текущее количество купюр в банкомате в хранилище
-            return returnedBanknotes;                                                                                     // Если банкомат может выдать всю необходимую сумму, возвращает хешмэп купюр
+            banknoteStorageSaver.saveStorage(availableBanknotes);
+            return returnedBanknotes;
         }
-    }
-
-
-    public void setAvailableBanknotes(int key, int value) {
-        Map<Integer, Integer> availableBanknotes = banknoteStorageSaver.getStorage();
-        availableBanknotes.put(key, value);
-        banknoteStorageSaver.saveStorage(availableBanknotes);
-    }
-
-    public Map<Integer, Integer> getStorage() {
-        return banknoteStorageSaver.getStorage();
     }
 }
