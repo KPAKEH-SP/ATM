@@ -9,7 +9,8 @@ import java.util.Map;
 @Component
 public class BanknoteStorageSaver {
     final File BANKNOTE_STORAGE_FILE = new File(getClass().getClassLoader().getResource("BanknoteStorage.bin").getFile());
-    public void saveStorage(Map<String, Integer> savedMap) {                                                                                   // С помощью сериализации сохраняет хештаблицу с банкнотами в файл BanknoteStorage.bin
+
+    public void saveStorage(Map<String, Integer> savedMap) {
         try {
             FileOutputStream fos = new FileOutputStream(BANKNOTE_STORAGE_FILE.getPath());
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -21,7 +22,7 @@ public class BanknoteStorageSaver {
         }
     }
 
-    public Map<String, Integer> getStorage() {                                                                             // С помощью сериализации загружает хештаблицу с банкнотами из файла BanknoteStorage.bin
+    public Map<String, Integer> getStorage() {
         Map<String, Integer> returnedBanknotes = new HashMap<>();
 
         try {
