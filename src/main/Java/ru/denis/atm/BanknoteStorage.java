@@ -1,52 +1,70 @@
 package ru.denis.atm;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.denis.atm.exceptions.CouldNotBeFoundException;
-import ru.denis.atm.exceptions.NotEnoughMoneyException;
+import ru.denis.atm.repository.DefaultCrudRepository;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class BanknoteStorage {
-    final BanknoteStorageDAO banknoteStorageDAO;
+    @Autowired
+    private DefaultCrudRepository defaultCrudRepository;
 
     @Autowired
-    public BanknoteStorage(BanknoteStorageDAO banknoteStorageSaver) {
-        this.banknoteStorageDAO = banknoteStorageSaver;
+    public BanknoteStorage(DefaultCrudRepository defaultCrudRepository) {
+        this.defaultCrudRepository = defaultCrudRepository;
     }
 
-    public Map<String, Integer> giveMoney(int sum) throws NotEnoughMoneyException {
+    @Transactional
+    public Map<String, Integer> giveMoney(int sum) {
         Map<String, Integer> returnedBanknotes = new HashMap<>();
 
         for (BanknotePatterns currentBanknote : BanknotePatterns.values()) {
             String currentBanknoteToString = String.valueOf(currentBanknote.getBanknote());
 
-            try {
-                if (banknoteStorageDAO.getBanknoteCount(currentBanknote.getBanknote()) > 0) {
-                    int banknoteCount = sum / currentBanknote.getBanknote();
+            BanknoteObject currentBanknoteObject = defaultCrudRepository.findById(currentBanknote.getBanknote()).get();
+            int banknoteCount = currentBanknoteObject.getCount();
+            if (banknoteCount > 0) {
+                int issuedBanknoteCount = sum / currentBanknote.getBanknote();
 
-                    if (banknoteStorageDAO.getBanknoteCount(currentBanknote.getBanknote()) >= banknoteCount) {
-                        sum -= banknoteCount * currentBanknote.getBanknote();
-                    }
+                if (banknoteCount >= issuedBanknoteCount) {
+                    sum -= issuedBanknoteCount * currentBanknote.getBanknote();
 
-                    if (banknoteCount > 0) {
-                        returnedBanknotes.put(currentBanknoteToString, banknoteCount);
-
-                        int newBanknoteCount = banknoteStorageDAO.getBanknoteCount(currentBanknote.getBanknote()) - banknoteCount;
-                        banknoteStorageDAO.saveBanknote(currentBanknote.getBanknote(), newBanknoteCount);
-                    }
                 }
-            } catch (CouldNotBeFoundException e) {
-                System.out.println(e.getMessage());
+
+                if (issuedBanknoteCount > 0) {
+                    returnedBanknotes.put(currentBanknoteToString, issuedBanknoteCount);
+
+                    currentBanknoteObject.setCount(banknoteCount - issuedBanknoteCount);
+                    defaultCrudRepository.save(currentBanknoteObject);
+                }
             }
+
         }
 
         if (sum > 0) {
-            throw new NotEnoughMoneyException();
+            throw new RuntimeException();
         } else {
             return returnedBanknotes;
+        }
+    }
+
+    public void updateStorage(Map<Integer, Integer> banknotes) {
+        for (BanknotePatterns currentBanknote : BanknotePatterns.values()) {
+            BanknoteObject updatableBanknoteObject = new BanknoteObject();
+
+            if (defaultCrudRepository.existsById(currentBanknote.getBanknote())) {
+                updatableBanknoteObject = defaultCrudRepository.findById(currentBanknote.getBanknote()).get();
+                updatableBanknoteObject.setCount(banknotes.get(currentBanknote.getBanknote()));
+            } else {
+                updatableBanknoteObject.setId(currentBanknote.getBanknote());
+                updatableBanknoteObject.setCount(banknotes.get(currentBanknote.getBanknote()));
+            }
+
+            defaultCrudRepository.save(updatableBanknoteObject);
         }
     }
 }

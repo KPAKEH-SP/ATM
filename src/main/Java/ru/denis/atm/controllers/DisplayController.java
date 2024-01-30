@@ -2,35 +2,36 @@ package ru.denis.atm.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.denis.atm.BanknoteObject;
 import ru.denis.atm.BanknoteStorage;
-import ru.denis.atm.BanknoteStorageDAO;
-import ru.denis.atm.exceptions.NotEnoughMoneyException;
+import ru.denis.atm.repository.DefaultCrudRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 public class DisplayController {
-    private final BanknoteStorageDAO banknoteStorageDAO;
     private final BanknoteStorage banknoteStorage;
+    @Autowired
+    private DefaultCrudRepository defaultCrudRepository;
 
     @Autowired
-    public DisplayController(BanknoteStorageDAO banknoteStorageSaver, BanknoteStorage banknoteStorage) {
-        this.banknoteStorageDAO = banknoteStorageSaver;
+    public DisplayController(BanknoteStorage banknoteStorage, DefaultCrudRepository defaultCrudRepository) {
         this.banknoteStorage = banknoteStorage;
     }
 
     @GetMapping("/showStorage")
     public String showStorage() {
-        Map<Integer, Integer> loadedBanknotes = banknoteStorageDAO.getStorage();
-        return loadedBanknotes.toString();
+        List<BanknoteObject> storage = new ArrayList<>();
+        storage = (List<BanknoteObject>) defaultCrudRepository.findAll();
+        return storage.toString();
     }
 
     @PatchMapping("/editStorage")
     public String updateStorage(@RequestBody Map<Integer, Integer> banknotes) {
-        String updatedStorage;
-        banknoteStorageDAO.updateStorage(banknotes);
-        updatedStorage = banknoteStorageDAO.getStorage().toString();
-        return updatedStorage;
+        banknoteStorage.updateStorage(banknotes);
+        return "Updated!";
     }
 
     @PostMapping("/getMoney")
@@ -41,8 +42,6 @@ public class DisplayController {
             returnedString = "Вам было выдано: " + issuedMoney;
         } catch (java.util.InputMismatchException e) {
             return "Введите сумму цифрами!";
-        } catch (NotEnoughMoneyException e) {
-            return e.getMessage();
         }
 
         return returnedString;

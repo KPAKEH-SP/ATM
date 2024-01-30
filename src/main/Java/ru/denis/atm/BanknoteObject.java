@@ -19,9 +19,18 @@ public class BanknoteObject {
         this.id = id;
     }
 
+    @Override
+    public String toString() {
+        return "BanknoteObject{" +
+                "id=" + id +
+                ", count=" + count +
+                '}';
+    }
+
     public int getCount() {
         return count;
     }
+
     public void setCount(int count) {
         this.count = count;
     }
