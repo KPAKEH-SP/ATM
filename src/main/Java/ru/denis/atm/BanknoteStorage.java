@@ -1,22 +1,17 @@
 package ru.denis.atm;
 
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.denis.atm.repository.DefaultCrudRepository;
+import ru.denis.atm.repository.BanknoteRepository;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class BanknoteStorage {
-    @Autowired
-    private DefaultCrudRepository defaultCrudRepository;
-
-    @Autowired
-    public BanknoteStorage(DefaultCrudRepository defaultCrudRepository) {
-        this.defaultCrudRepository = defaultCrudRepository;
-    }
+    private BanknoteRepository banknoteRepository;
 
     @Transactional
     public Map<String, Integer> giveMoney(int sum) {
@@ -25,7 +20,7 @@ public class BanknoteStorage {
         for (BanknotePatterns currentBanknote : BanknotePatterns.values()) {
             String currentBanknoteToString = String.valueOf(currentBanknote.getBanknote());
 
-            BanknoteObject currentBanknoteObject = defaultCrudRepository.findById(currentBanknote.getBanknote()).get();
+            Banknote currentBanknoteObject = banknoteRepository.findById(currentBanknote.getBanknote()).get();
             int banknoteCount = currentBanknoteObject.getCount();
             if (banknoteCount > 0) {
                 int issuedBanknoteCount = sum / currentBanknote.getBanknote();
@@ -39,7 +34,7 @@ public class BanknoteStorage {
                     returnedBanknotes.put(currentBanknoteToString, issuedBanknoteCount);
 
                     currentBanknoteObject.setCount(banknoteCount - issuedBanknoteCount);
-                    defaultCrudRepository.save(currentBanknoteObject);
+                    banknoteRepository.save(currentBanknoteObject);
                 }
             }
 
@@ -54,17 +49,17 @@ public class BanknoteStorage {
 
     public void updateStorage(Map<Integer, Integer> banknotes) {
         for (BanknotePatterns currentBanknote : BanknotePatterns.values()) {
-            BanknoteObject updatableBanknoteObject = new BanknoteObject();
+            Banknote updatableBanknote = new Banknote();
 
-            if (defaultCrudRepository.existsById(currentBanknote.getBanknote())) {
-                updatableBanknoteObject = defaultCrudRepository.findById(currentBanknote.getBanknote()).get();
-                updatableBanknoteObject.setCount(banknotes.get(currentBanknote.getBanknote()));
+            if (banknoteRepository.existsById(currentBanknote.getBanknote())) {
+                updatableBanknote = banknoteRepository.findById(currentBanknote.getBanknote()).get();
+                updatableBanknote.setCount(banknotes.get(currentBanknote.getBanknote()));
             } else {
-                updatableBanknoteObject.setId(currentBanknote.getBanknote());
-                updatableBanknoteObject.setCount(banknotes.get(currentBanknote.getBanknote()));
+                updatableBanknote.setId(currentBanknote.getBanknote());
+                updatableBanknote.setCount(banknotes.get(currentBanknote.getBanknote()));
             }
 
-            defaultCrudRepository.save(updatableBanknoteObject);
+            banknoteRepository.save(updatableBanknote);
         }
     }
 }
