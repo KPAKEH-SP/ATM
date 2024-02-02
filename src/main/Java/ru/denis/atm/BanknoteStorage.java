@@ -2,6 +2,7 @@ package ru.denis.atm;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.denis.atm.repository.BanknoteRepository;
 
@@ -11,7 +12,8 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class BanknoteStorage {
-    private BanknoteRepository banknoteRepository;
+    @Autowired
+    private final BanknoteRepository banknoteRepository;
 
     @Transactional
     public Map<String, Integer> giveMoney(int sum) {

@@ -1,30 +1,23 @@
 package ru.denis.atm.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.denis.atm.Banknote;
 import ru.denis.atm.BanknoteStorage;
 import ru.denis.atm.repository.BanknoteRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 public class DisplayController {
     private final BanknoteStorage banknoteStorage;
-    @Autowired
-    private BanknoteRepository banknoteRepository;
-
-    @Autowired
-    public DisplayController(BanknoteStorage banknoteStorage, BanknoteRepository banknoteRepository) {
-        this.banknoteStorage = banknoteStorage;
-    }
+    private final BanknoteRepository banknoteRepository;
 
     @GetMapping("/showStorage")
     public String showStorage() {
-        List<Banknote> storage = new ArrayList<>();
-        storage = (List<Banknote>) banknoteRepository.findAll();
+        List<Banknote> storage = banknoteRepository.findAll();
         return storage.toString();
     }
 
