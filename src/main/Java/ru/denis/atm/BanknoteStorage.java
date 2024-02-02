@@ -1,46 +1,67 @@
 package ru.denis.atm;
 
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.denis.atm.repository.BanknoteRepository;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class BanknoteStorage {
-    final BanknoteStorageSaver banknoteStorageSaver;
-
     @Autowired
-    public BanknoteStorage(BanknoteStorageSaver banknoteStorageSaver) {
-        this.banknoteStorageSaver = banknoteStorageSaver;
-    }
+    private final BanknoteRepository banknoteRepository;
 
-    public Map<String, Integer> giveMoney(int sum) throws NotEnoughMoneyException {
-        Map<String, Integer> availableBanknotes = banknoteStorageSaver.getStorage();
+    @Transactional
+    public Map<String, Integer> giveMoney(int sum) {
         Map<String, Integer> returnedBanknotes = new HashMap<>();
 
         for (BanknotePatterns currentBanknote : BanknotePatterns.values()) {
-            if (availableBanknotes.getOrDefault(String.valueOf(currentBanknote.getBanknote()), 0) > 0) {
-                int banknoteCount = sum / currentBanknote.getBanknote();
-                if (availableBanknotes.getOrDefault(String.valueOf(currentBanknote.getBanknote()), 0) >= banknoteCount) {
-                    sum -= banknoteCount * currentBanknote.getBanknote();
+            String currentBanknoteToString = String.valueOf(currentBanknote.getBanknote());
+
+            Banknote currentBanknoteObject = banknoteRepository.findById(currentBanknote.getBanknote()).get();
+            int banknoteCount = currentBanknoteObject.getCount();
+            if (banknoteCount > 0) {
+                int issuedBanknoteCount = sum / currentBanknote.getBanknote();
+
+                if (banknoteCount >= issuedBanknoteCount) {
+                    sum -= issuedBanknoteCount * currentBanknote.getBanknote();
+
                 }
 
-                if (banknoteCount > 0) {
-                    returnedBanknotes.put(String.valueOf(currentBanknote.getBanknote()), banknoteCount);
+                if (issuedBanknoteCount > 0) {
+                    returnedBanknotes.put(currentBanknoteToString, issuedBanknoteCount);
 
-                    int newAvailableBanknoteCount = availableBanknotes.get(String.valueOf(currentBanknote.getBanknote()));
-                    newAvailableBanknoteCount -= banknoteCount;
-                    availableBanknotes.put(String.valueOf(currentBanknote.getBanknote()), newAvailableBanknoteCount);
+                    currentBanknoteObject.setCount(banknoteCount - issuedBanknoteCount);
+                    banknoteRepository.save(currentBanknoteObject);
                 }
             }
+
         }
 
         if (sum > 0) {
-            throw new NotEnoughMoneyException();
+            throw new RuntimeException();
         } else {
-            banknoteStorageSaver.saveStorage(availableBanknotes);
             return returnedBanknotes;
+        }
+    }
+
+    public void updateStorage(Map<Integer, Integer> banknotes) {
+        for (BanknotePatterns currentBanknote : BanknotePatterns.values()) {
+            Banknote updatableBanknote = new Banknote();
+
+            if (banknoteRepository.existsById(currentBanknote.getBanknote())) {
+                updatableBanknote = banknoteRepository.findById(currentBanknote.getBanknote()).get();
+                updatableBanknote.setCount(banknotes.get(currentBanknote.getBanknote()));
+            } else {
+                updatableBanknote.setId(currentBanknote.getBanknote());
+                updatableBanknote.setCount(banknotes.get(currentBanknote.getBanknote()));
+            }
+
+            banknoteRepository.save(updatableBanknote);
         }
     }
 }

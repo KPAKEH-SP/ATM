@@ -1,37 +1,30 @@
 package ru.denis.atm.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.denis.atm.BanknotePatterns;
+import ru.denis.atm.Banknote;
 import ru.denis.atm.BanknoteStorage;
-import ru.denis.atm.BanknoteStorageSaver;
-import ru.denis.atm.NotEnoughMoneyException;
+import ru.denis.atm.repository.BanknoteRepository;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 public class DisplayController {
-    private final BanknoteStorageSaver banknoteStorageSaver;
     private final BanknoteStorage banknoteStorage;
-
-    @Autowired
-    public DisplayController(BanknoteStorageSaver banknoteStorageSaver, BanknoteStorage banknoteStorage) {
-        this.banknoteStorageSaver = banknoteStorageSaver;
-        this.banknoteStorage = banknoteStorage;
-    }
+    private final BanknoteRepository banknoteRepository;
 
     @GetMapping("/showStorage")
     public String showStorage() {
-        Map<String, Integer> loadedBanknotes = banknoteStorageSaver.getStorage();
-        return loadedBanknotes.toString();
+        List<Banknote> storage = banknoteRepository.findAll();
+        return storage.toString();
     }
 
     @PatchMapping("/editStorage")
-    public String updateStorage(@RequestBody Map<String, Integer> banknotes) {
-        String updatedStorage;
-        banknoteStorageSaver.saveStorage(banknotes);
-        updatedStorage = banknoteStorageSaver.getStorage().toString();
-        return updatedStorage;
+    public String updateStorage(@RequestBody Map<Integer, Integer> banknotes) {
+        banknoteStorage.updateStorage(banknotes);
+        return "Updated!";
     }
 
     @PostMapping("/getMoney")
@@ -41,8 +34,8 @@ public class DisplayController {
             Map<String, Integer> issuedMoney = banknoteStorage.giveMoney(sum);
             returnedString = "Вам было выдано: " + issuedMoney;
         } catch (java.util.InputMismatchException e) {
-            System.out.println("Введите сумму цифрами!");
-        } catch (NotEnoughMoneyException ignored) {}
+            return "Введите сумму цифрами!";
+        }
 
         return returnedString;
     }
