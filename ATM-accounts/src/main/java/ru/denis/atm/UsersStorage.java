@@ -1,7 +1,6 @@
 package ru.denis.atm;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.denis.atm.Exceptions.UserWithThisEmailAlreadyExists;
 import ru.denis.atm.Exceptions.UserWithThisLoginAlreadyExists;
@@ -10,9 +9,9 @@ import ru.denis.atm.models.UserModel;
 import ru.denis.atm.repository.UserRepository;
 
 @Component
+@RequiredArgsConstructor
 public class UsersStorage {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public void newUser(RegistryForm registryForm) throws UserWithThisLoginAlreadyExists, UserWithThisEmailAlreadyExists {
         UserModel newUser = new UserModel();
