@@ -1,4 +1,4 @@
-package ru.denis.atm.Exceptions;
+package ru.denis.atm.exceptions;
 
 public class UserWithThisEmailAlreadyExists extends Exception {
     public UserWithThisEmailAlreadyExists(){

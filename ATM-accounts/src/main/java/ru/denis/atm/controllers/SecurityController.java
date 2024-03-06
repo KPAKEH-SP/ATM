@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.denis.atm.Exceptions.UserWithThisEmailAlreadyExists;
-import ru.denis.atm.Exceptions.UserWithThisLoginAlreadyExists;
-import ru.denis.atm.UsersStorage;
+import ru.denis.atm.exceptions.UserWithThisEmailAlreadyExists;
+import ru.denis.atm.exceptions.UserWithThisLoginAlreadyExists;
+import ru.denis.atm.service.UsersStorage;
 import ru.denis.atm.forms.DeleteForm;
 import ru.denis.atm.forms.RegistryForm;
 import ru.denis.atm.models.UserModel;
@@ -25,6 +25,7 @@ public class SecurityController {
     @GetMapping("/getUsers")
     public String getUsers() {
         List<UserModel> users = userRepository.findAll();
+
         return users.toString();
     }
 
@@ -32,7 +33,7 @@ public class SecurityController {
     public String createUser(@RequestBody RegistryForm registryForm) {
         try {
             usersStorage.newUser(registryForm);
-            return "Новый пользователь " + registryForm.login + " создан";
+            return "Новый пользователь " + registryForm.getLogin() + " создан";
         } catch (UserWithThisLoginAlreadyExists | UserWithThisEmailAlreadyExists e) {
             return e.getMessage();
         }

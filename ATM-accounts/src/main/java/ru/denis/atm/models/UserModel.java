@@ -3,13 +3,14 @@ package ru.denis.atm.models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import ru.denis.atm.dto.FullName;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
-@ToString
 public class UserModel {
     @Id
     @Column(name = "id")
@@ -27,6 +28,11 @@ public class UserModel {
     private String email;
 
     @Column(name = "fullname")
-    private String fullName;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private FullName fullName;
 
+    @Override
+    public String toString() {
+        return "id: " + id + ", login: " + login + ", email: " + email + ", password: " + password + ", full name: " + fullName.toString() + "\n";
+    }
 }
