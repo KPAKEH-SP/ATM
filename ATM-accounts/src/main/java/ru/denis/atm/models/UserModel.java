@@ -30,9 +30,4 @@ public class UserModel {
     @Column(name = "fullname")
     @JdbcTypeCode(SqlTypes.JSON)
     private FullName fullName;
-
-    @Override
-    public String toString() {
-        return "id: " + id + ", login: " + login + ", email: " + email + ", password: " + password + ", full name: " + fullName.toString() + "\n";
-    }
 }

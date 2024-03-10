@@ -1,11 +1,9 @@
 package ru.denis.atm.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 import ru.denis.atm.exceptions.UserWithThisEmailAlreadyExists;
+import ru.denis.atm.exceptions.UserWithThisIdNotExist;
 import ru.denis.atm.exceptions.UserWithThisLoginAlreadyExists;
 import ru.denis.atm.service.UsersStorage;
 import ru.denis.atm.forms.DeleteForm;
@@ -16,17 +14,14 @@ import ru.denis.atm.repository.UserRepository;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class SecurityController {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UsersStorage usersStorage;
+    private final UserRepository userRepository;
+    private final UsersStorage usersStorage;
 
     @GetMapping("/getUsers")
-    public String getUsers() {
-        List<UserModel> users = userRepository.findAll();
-
-        return users.toString();
+    public List<UserModel> getUsers() {
+        return userRepository.findAll();
     }
 
     @PostMapping("/newUser")
@@ -40,12 +35,17 @@ public class SecurityController {
     }
 
     @PostMapping("/deleteUser")
-    public String deleteUser(@RequestBody DeleteForm deleteForm) {
+    public String deleteUser(@RequestBody DeleteForm deleteForm) throws UserWithThisIdNotExist {
         if (userRepository.existsById(deleteForm.id)) {
             userRepository.deleteById(deleteForm.id);
             return "Пользователь с id " + deleteForm.id + " удалён";
         } else {
-            return "Пользователя с данным id не существует";
+            throw new UserWithThisIdNotExist();
         }
+    }
+
+    @ExceptionHandler(UserWithThisIdNotExist.class)
+    public String idException(UserWithThisIdNotExist e){
+        return e.getMessage();
     }
 }
