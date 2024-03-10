@@ -25,12 +25,14 @@ public class SecurityController {
     }
 
     @PostMapping("/newUser")
-    public String createUser(@RequestBody RegistryForm registryForm) {
-        try {
+    public RegistryForm createUser(@RequestBody RegistryForm registryForm) throws UserWithThisLoginAlreadyExists, UserWithThisEmailAlreadyExists {
+        if (userRepository.existsByLogin(registryForm.getLogin())){
+            throw new UserWithThisLoginAlreadyExists();
+        } else if (userRepository.existsByEmail(registryForm.getEmail())) {
+            throw new UserWithThisEmailAlreadyExists();
+        } else {
             usersStorage.newUser(registryForm);
-            return "Новый пользователь " + registryForm.getLogin() + " создан";
-        } catch (UserWithThisLoginAlreadyExists | UserWithThisEmailAlreadyExists e) {
-            return e.getMessage();
+            return registryForm;
         }
     }
 
@@ -42,10 +44,5 @@ public class SecurityController {
         } else {
             throw new UserWithThisIdNotExist();
         }
-    }
-
-    @ExceptionHandler(UserWithThisIdNotExist.class)
-    public String idException(UserWithThisIdNotExist e){
-        return e.getMessage();
     }
 }
