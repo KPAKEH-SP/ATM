@@ -8,7 +8,7 @@ import ru.denis.atm.dto.FullName;
 @Setter
 public class RegistryForm {
     private String login;
-    private  String password;
+    private String password;
     private String email;
     private FullName fullName;
 }

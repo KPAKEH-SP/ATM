@@ -2,9 +2,9 @@ package ru.denis.atm.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.denis.atm.exceptions.UserWithThisEmailAlreadyExists;
+import ru.denis.atm.exceptions.validation.EmailUniqueException;
 import ru.denis.atm.exceptions.UserWithThisIdNotExist;
-import ru.denis.atm.exceptions.UserWithThisLoginAlreadyExists;
+import ru.denis.atm.exceptions.validation.LoginUniqueException;
 import ru.denis.atm.service.UsersStorage;
 import ru.denis.atm.forms.DeleteForm;
 import ru.denis.atm.forms.RegistryForm;
@@ -25,11 +25,11 @@ public class SecurityController {
     }
 
     @PostMapping("/newUser")
-    public RegistryForm createUser(@RequestBody RegistryForm registryForm) throws UserWithThisLoginAlreadyExists, UserWithThisEmailAlreadyExists {
-        if (userRepository.existsByLogin(registryForm.getLogin())){
-            throw new UserWithThisLoginAlreadyExists();
+    public RegistryForm createUser(@RequestBody RegistryForm registryForm) throws LoginUniqueException, EmailUniqueException {
+        if (userRepository.existsByLogin(registryForm.getLogin())) {
+            throw new LoginUniqueException();
         } else if (userRepository.existsByEmail(registryForm.getEmail())) {
-            throw new UserWithThisEmailAlreadyExists();
+            throw new EmailUniqueException();
         } else {
             usersStorage.newUser(registryForm);
             return registryForm;
@@ -37,10 +37,10 @@ public class SecurityController {
     }
 
     @PostMapping("/deleteUser")
-    public String deleteUser(@RequestBody DeleteForm deleteForm) throws UserWithThisIdNotExist {
+    public DeleteForm deleteUser(@RequestBody DeleteForm deleteForm) throws UserWithThisIdNotExist {
         if (userRepository.existsById(deleteForm.id)) {
             userRepository.deleteById(deleteForm.id);
-            return "Пользователь с id " + deleteForm.id + " удалён";
+            return deleteForm;
         } else {
             throw new UserWithThisIdNotExist();
         }
