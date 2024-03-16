@@ -6,6 +6,7 @@ import ru.denis.atm.Banknote;
 import ru.denis.atm.BanknoteStorage;
 import ru.denis.atm.repository.BanknoteRepository;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,27 +17,25 @@ public class DisplayController {
     private final BanknoteRepository banknoteRepository;
 
     @GetMapping("/showStorage")
-    public String showStorage() {
-        List<Banknote> storage = banknoteRepository.findAll();
-        return storage.toString();
+    public List<Banknote> showStorage() {
+        return banknoteRepository.findAll();
     }
 
     @PatchMapping("/editStorage")
-    public String updateStorage(@RequestBody Map<Integer, Integer> banknotes) {
+    public Map<Integer, Integer> updateStorage(@RequestBody Map<Integer, Integer> banknotes) {
         banknoteStorage.updateStorage(banknotes);
-        return "Updated!";
+        return banknotes;
     }
 
     @PostMapping("/getMoney")
-    public String getMoney(@RequestBody Integer sum) {
-        String returnedString = "";
+    public Map<String, Integer> getMoney(@RequestBody Integer sum) {
+        Map<String, Integer> issuedMoney = new HashMap<>();
         try {
-            Map<String, Integer> issuedMoney = banknoteStorage.giveMoney(sum);
-            returnedString = "Вам было выдано: " + issuedMoney;
+            issuedMoney = banknoteStorage.giveMoney(sum);
         } catch (java.util.InputMismatchException e) {
-            return "Введите сумму цифрами!";
+            System.out.println(e.getMessage());
         }
 
-        return returnedString;
+        return issuedMoney;
     }
 }

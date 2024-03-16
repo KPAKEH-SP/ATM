@@ -8,6 +8,11 @@
     <name>ATM-accounts</name>
     <url>http://maven.apache.org</url>
 
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+    </properties>
+
     <dependencies>
         <!--Data source-->
         <dependency>
@@ -20,6 +25,12 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
             <version>3.2.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>4.26.0</version>
+        </dependency>
+
 
         <!--Test-->
         <dependency>
@@ -40,11 +51,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>3.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.thymeleaf</groupId>
-            <artifactId>thymeleaf-spring6</artifactId>
-            <version>3.1.2.RELEASE</version>
         </dependency>
 
         <!--Other-->
@@ -67,8 +73,4 @@
 
     </dependencies>
 
-    <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-    </properties>
 </project>
