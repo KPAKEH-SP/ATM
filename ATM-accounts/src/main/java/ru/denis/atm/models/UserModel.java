@@ -15,7 +15,7 @@ public class UserModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id")
-    @SequenceGenerator(name = "id", sequenceName = "user_id_seq", allocationSize = 0)
+    @SequenceGenerator(name = "id", sequenceName = "users_id_seq", allocationSize = 0)
     private Long id;
 
     @Column(name = "login", unique = true)

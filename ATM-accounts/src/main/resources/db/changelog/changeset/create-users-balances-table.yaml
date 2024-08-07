@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-user-balance
+      author: Denis
+      changes:
+        - createTable:
+            tableName: users-balances
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: login
+                  type: varchar
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: balance
+                  type: bigint

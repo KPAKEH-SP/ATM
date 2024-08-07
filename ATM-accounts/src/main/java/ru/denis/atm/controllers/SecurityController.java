@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.denis.atm.exceptions.validation.EmailUniqueException;
 import ru.denis.atm.exceptions.UserWithThisIdNotExist;
 import ru.denis.atm.exceptions.validation.LoginUniqueException;
+import ru.denis.atm.kafka.KafkaProducer;
+import ru.denis.atm.service.UsersBalancesStorage;
 import ru.denis.atm.service.UsersStorage;
 import ru.denis.atm.forms.DeleteForm;
 import ru.denis.atm.forms.RegistryForm;
@@ -18,6 +20,8 @@ import java.util.List;
 public class SecurityController {
     private final UserRepository userRepository;
     private final UsersStorage usersStorage;
+    private final UsersBalancesStorage usersBalancesStorage;
+    private final KafkaProducer kafkaProducer;
 
     @GetMapping("/getUsers")
     public List<UserModel> getUsers() {
@@ -26,23 +30,18 @@ public class SecurityController {
 
     @PostMapping("/newUser")
     public RegistryForm createUser(@RequestBody RegistryForm registryForm) throws LoginUniqueException, EmailUniqueException {
-        if (userRepository.existsByLogin(registryForm.getLogin())) {
-            throw new LoginUniqueException();
-        } else if (userRepository.existsByEmail(registryForm.getEmail())) {
-            throw new EmailUniqueException();
-        } else {
-            usersStorage.newUser(registryForm);
-            return registryForm;
-        }
+        usersStorage.newUser(registryForm);
+        Long userId = usersStorage.getUserIdByLogin(registryForm.getLogin());
+        usersBalancesStorage.newUserBalance(registryForm, userId);
+        kafkaProducer.sendMessage("new-user-event", registryForm.getLogin());
+        return registryForm;
     }
 
     @PostMapping("/deleteUser")
     public DeleteForm deleteUser(@RequestBody DeleteForm deleteForm) throws UserWithThisIdNotExist {
-        if (userRepository.existsById(deleteForm.id)) {
-            userRepository.deleteById(deleteForm.id);
-            return deleteForm;
-        } else {
-            throw new UserWithThisIdNotExist();
-        }
+        usersStorage.deleteUser(deleteForm);
+        usersBalancesStorage.deleteUserBalance(deleteForm);
+        kafkaProducer.sendMessage("del-user-event", deleteForm.getLogin());
+        return deleteForm;
     }
 }
