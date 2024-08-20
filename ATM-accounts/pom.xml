@@ -75,6 +75,11 @@
             <artifactId>spring-kafka</artifactId>
             <version>3.2.0</version>
         </dependency>
+        <dependency>
+            <groupId>ru.denis.atm</groupId>
+            <artifactId>kafka-events</artifactId>
+            <version>0.0.1</version>
+        </dependency>
 
 
     </dependencies>

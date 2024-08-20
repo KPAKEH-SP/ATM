@@ -10,6 +10,4 @@ public interface UserRepository extends JpaRepository<UserModel, Long> {
     boolean existsByLogin(String login);
 
     void deleteByLogin(String login);
-
-    UserModel getUserModelByLogin(String login);
 }

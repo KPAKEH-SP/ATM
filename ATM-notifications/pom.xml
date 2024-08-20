@@ -55,6 +55,12 @@
             <artifactId>spring-boot-starter</artifactId>
             <version>3.2.2</version>
         </dependency>
+        <dependency>
+            <groupId>ru.denis.atm</groupId>
+            <artifactId>kafka-events</artifactId>
+            <version>0.0.1</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 </project>
