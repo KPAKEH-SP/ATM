@@ -14,7 +14,7 @@ public class KafkaConsumer {
     private final NewUserNotification newUserNotification;
     private final DelUserNotification delUserNotification;
 
-    @KafkaListener(topics = "users-events", groupId = "notifications-consumer")
+    @KafkaListener(topics = "user-events", groupId = "notifications-consumer")
     public void listen(ConsumerRecord<String, EditUserEvent> record) {
         String editableUserLogin = record.value().getLogin();
 
