@@ -2,10 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.denis.atm</groupId>
-    <artifactId>atm-accounts</artifactId>
+    <artifactId>ATM-notifications</artifactId>
     <packaging>jar</packaging>
     <version>1.0</version>
-    <name>ATM-accounts</name>
+    <name>ATM-notifications</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -14,24 +14,6 @@
     </properties>
 
     <dependencies>
-        <!--Data source-->
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.7.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>3.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-            <version>4.26.0</version>
-        </dependency>
-
-
         <!--Test-->
         <dependency>
             <groupId>junit</groupId>
@@ -44,13 +26,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <version>3.2.2</version>
             <scope>test</scope>
-        </dependency>
-
-        <!--Web-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>3.2.2</version>
         </dependency>
 
         <!--Other-->
@@ -76,12 +51,21 @@
             <version>3.2.0</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+        <dependency>
             <groupId>ru.denis.atm</groupId>
             <artifactId>kafka-events</artifactId>
             <version>0.0.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>2.17.2</version>
         </dependency>
 
-
     </dependencies>
-
 </project>

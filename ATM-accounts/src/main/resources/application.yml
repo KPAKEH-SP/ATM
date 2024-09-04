@@ -6,3 +6,13 @@ spring:
     url: jdbc:postgresql://localhost:5432/ATM-Users
     username: postgres
     password: 123456
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    bootstrap-servers: localhost:9092,localhost:9094,localhost:9096
+server:
+  port: 8080
+
+user-events:
+  topic-name: "user-events"

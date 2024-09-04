@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-core-db
+      author: Denis
+      changes:
+        - createTable:
+            tableName: banknotes
+            columns:
+              - column:
+                  name: id
+                  type: integer
+              - column:
+                  name: count
+                  type: integer
